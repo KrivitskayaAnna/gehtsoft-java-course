@@ -6,6 +6,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
+/**
+ * CustomListTests contains unit tests coverage of usual and corner cases for the CustomList of strings
+ */
 class CustomListTests {
     private CustomList<String> list;
 

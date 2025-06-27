@@ -1,5 +1,10 @@
 import java.util.*;
 
+/**
+ * CustomList is generic implementation of List interface with the basic methods implemented
+ *
+ * @param <T> Type of elements inside a list
+ */
 public class CustomList<T> implements List<T> {
     private final int initSize = 10;
     private Object[] elements;
@@ -161,7 +166,7 @@ public class CustomList<T> implements List<T> {
 
     @Override
     public T set(int index, T element) {
-        if (index > 0 && index < size) {
+        if (index >= 0 && index < size) {
             T previousEl = (T) elements[index];
             elements[index] = element;
             return previousEl;
