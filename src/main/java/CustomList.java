@@ -70,7 +70,7 @@ public class CustomList<T> implements List<T> {
         if (o != null) {
             for (int i = 0; i < size; i++) {
                 if (Objects.equals(o, elements[i])) {
-                    Object[] removeCopyArray = new Object[size - 1];
+                    Object[] removeCopyArray = new Object[elements.length - 1];
                     System.arraycopy(elements, 0, removeCopyArray, 0, i);
                     System.arraycopy(elements, i + 1, removeCopyArray, i, elements.length - i - 1);
                     elements = removeCopyArray;
@@ -108,13 +108,17 @@ public class CustomList<T> implements List<T> {
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
-        Object[] arrToAdd = c.toArray();
-        int insertPosition = index;
-        for (int i = 0; i < c.size(); i++) {
-            add(insertPosition, (T) arrToAdd[i]);
-            insertPosition++;
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Cannot add - index is incorrect");
+        } else {
+            Object[] arrToAdd = c.toArray();
+            int insertPosition = index;
+            for (int i = 0; i < c.size(); i++) {
+                add(insertPosition, (T) arrToAdd[i]);
+                insertPosition++;
+            }
+            return true;
         }
-        return true;
     }
 
     @Override
@@ -150,21 +154,23 @@ public class CustomList<T> implements List<T> {
 
     @Override
     public T get(int index) {
-        if (index < size) {
+        if (index < size && index >= 0) {
             return (T) elements[index];
-        } else throw new ArrayIndexOutOfBoundsException("No element with index " + index);
+        } else throw new IndexOutOfBoundsException("No element with index " + index);
     }
 
     @Override
     public T set(int index, T element) {
-        T previousEl = (T) elements[index];
-        elements[index] = element;
-        return previousEl;
+        if (index > 0 && index < size) {
+            T previousEl = (T) elements[index];
+            elements[index] = element;
+            return previousEl;
+        } else throw new IndexOutOfBoundsException("Cannot set index " + index);
     }
 
     @Override
     public void add(int index, T element) {
-        if (index <= size) {
+        if (index <= size && index > 0) {
             resizeIfFull();
             Object previous;
             Object next = element;
@@ -180,9 +186,9 @@ public class CustomList<T> implements List<T> {
 
     @Override
     public T remove(int index) {
-        if (index < size) {
+        if (index < size && index > 0) {
             T removed = (T) elements[index];
-            Object[] removeCopyArray = new Object[size - 1];
+            Object[] removeCopyArray = new Object[elements.length - 1];
             System.arraycopy(elements, 0, removeCopyArray, 0, index);
             System.arraycopy(elements, index + 1, removeCopyArray, index, elements.length - index - 1);
             elements = removeCopyArray;
@@ -193,12 +199,14 @@ public class CustomList<T> implements List<T> {
 
     @Override
     public int indexOf(Object o) {
-        for (int i = 0; i < size; i++) {
-            if (Objects.equals(o, elements[i])) {
-                return i;
+        if (o != null) {
+            for (int i = 0; i < size; i++) {
+                if (Objects.equals(o, elements[i])) {
+                    return i;
+                }
             }
-        }
-        return -1;
+            return -1;
+        } else throw new NullPointerException("Cannot get index of null");
     }
 
     @Override
