@@ -19,49 +19,49 @@ public class CustomListDemo {
 
         //adding elements
         aList.add("str1");
-        aList.add("str2");
         util.printArray();
 
         //adding element by index
-        aList.add(1, "str3");
+        aList.add(0, "str2");
         util.printArray();
 
         //add all elements
         CustomList<String> addList = new CustomList<String>();
+        addList.add("str3");
         addList.add("str4");
-        addList.add("str5");
         aList.addAll(addList);
-        util.printArray();
-        aList.addAll(3, addList);
         util.printArray();
 
         //contain elements
-        System.out.println(aList.contains("str1"));
+        System.out.println(aList.contains("str3"));
         System.out.println(aList.contains("nonexisting"));
 
         //contain all elements
-        CustomList<String> containList = new CustomList<String>();
-        containList.add("str1");
-        containList.add("nonexisting");
-        System.out.println(aList.containsAll(containList));
+        System.out.println(aList.containsAll(addList));
 
         //removing elements
-        aList.remove("str2");
+        aList.add("str3");
+        util.printArray();
+        aList.remove("str3");
         util.printArray();
 
-        //removing element by index
-        aList.remove(0);
+        //removing element by
+        aList.remove(1);
         util.printArray();
 
         //remove all elements
         CustomList<String> removeList = new CustomList<String>();
         removeList.add("str4");
-        removeList.add("str1");
+        removeList.add("str2");
         aList.removeAll(removeList);
         util.printArray();
 
         //retain all elements
+        aList.add("str1");
+        aList.add("str2");
+        aList.add("str3");
         CustomList<String> retainList = new CustomList<String>();
+        retainList.add("str2");
         retainList.add("str3");
         aList.retainAll(retainList);
         util.printArray();
@@ -71,17 +71,17 @@ public class CustomListDemo {
         System.out.println(aList.indexOf("nonexisting"));
 
         //lastIndexOf element
-        aList.add("str6");
-        aList.add("str6");
+        aList.add("str3");
         util.printArray();
-        System.out.println(aList.lastIndexOf("str6"));
+        System.out.println(aList.lastIndexOf("str3"));
         System.out.println(aList.lastIndexOf("nonexisting"));
 
         //equal lists
-        List<String> otherList = new CustomList<>();
+        CustomList<String> otherList = new CustomList<String>();
+        otherList.add("str2");
         otherList.add("str3");
-        otherList.add("str6");
-        otherList.add("str6");
+        System.out.println(aList.equals(otherList));
+        otherList.add("str3");
         System.out.println(aList.equals(otherList));
 
         //size
@@ -92,7 +92,7 @@ public class CustomListDemo {
         System.out.println(Arrays.toString(subList.toArray()));
 
         //setting elements
-        aList.set(0, "otherStr1");
+        aList.set(0, "str4");
         util.printArray();
 
         //getting elements
@@ -109,8 +109,8 @@ public class CustomListDemo {
 
         //clear
         aList.clear();
-        util.printArray();
         System.out.println(aList.size());
         System.out.println(aList.isEmpty());
+        util.printArray();
     }
 }

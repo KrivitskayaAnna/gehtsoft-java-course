@@ -176,7 +176,7 @@ public class CustomList<T> implements List<T> {
 
     @Override
     public void add(int index, T element) {
-        if (index <= size && index > 0) {
+        if (index <= size && index >= 0) {
             resizeIfFull();
             Object previous;
             Object next = element;
