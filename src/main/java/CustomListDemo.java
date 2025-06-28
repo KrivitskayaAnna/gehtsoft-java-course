@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * CustomListDemo class contains a demo code for the most basic methods implemented
@@ -17,19 +18,81 @@ public class CustomListDemo {
         PrintArray util = new PrintArray();
 
         //adding elements
-        aList.add("someStr");
-        aList.add("someStr2");
+        aList.add("str1");
+        aList.add("str2");
         util.printArray();
 
-        //removing elements
-        aList.remove("someStr2");
+        //adding element by index
+        aList.add(1, "str3");
         util.printArray();
+
+        //add all elements
+        CustomList<String> addList = new CustomList<String>();
+        addList.add("str4");
+        addList.add("str5");
+        aList.addAll(addList);
+        util.printArray();
+        aList.addAll(3, addList);
+        util.printArray();
+
+        //contain elements
+        System.out.println(aList.contains("str1"));
+        System.out.println(aList.contains("nonexisting"));
+
+        //contain all elements
+        CustomList<String> containList = new CustomList<String>();
+        containList.add("str1");
+        containList.add("nonexisting");
+        System.out.println(aList.containsAll(containList));
+
+        //removing elements
+        aList.remove("str2");
+        util.printArray();
+
+        //removing element by index
+        aList.remove(0);
+        util.printArray();
+
+        //remove all elements
+        CustomList<String> removeList = new CustomList<String>();
+        removeList.add("str4");
+        removeList.add("str1");
+        aList.removeAll(removeList);
+        util.printArray();
+
+        //retain all elements
+        CustomList<String> retainList = new CustomList<String>();
+        retainList.add("str3");
+        aList.retainAll(retainList);
+        util.printArray();
+
+        //indexOf element
+        System.out.println(aList.indexOf("str3"));
+        System.out.println(aList.indexOf("nonexisting"));
+
+        //lastIndexOf element
+        aList.add("str6");
+        aList.add("str6");
+        util.printArray();
+        System.out.println(aList.lastIndexOf("str6"));
+        System.out.println(aList.lastIndexOf("nonexisting"));
+
+        //equal lists
+        List<String> otherList = new CustomList<>();
+        otherList.add("str3");
+        otherList.add("str6");
+        otherList.add("str6");
+        System.out.println(aList.equals(otherList));
 
         //size
         System.out.println(aList.size());
 
+        //sublist
+        List<String> subList = aList.subList(0, 2);
+        System.out.println(Arrays.toString(subList.toArray()));
+
         //setting elements
-        aList.set(0, "someOtherStr");
+        aList.set(0, "otherStr1");
         util.printArray();
 
         //getting elements
@@ -38,8 +101,16 @@ public class CustomListDemo {
         //check for empty
         System.out.println(aList.isEmpty());
 
+        //resizing list when full
+        for (int i = 0; i < 10; i++) {
+            aList.add("strX");
+        }
+        util.printArray();
+
         //clear
         aList.clear();
         util.printArray();
+        System.out.println(aList.size());
+        System.out.println(aList.isEmpty());
     }
 }

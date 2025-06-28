@@ -72,6 +72,7 @@ public class CustomList<T> implements List<T> {
 
     @Override
     public boolean remove(Object o) {
+        boolean overallResult = false;
         if (o != null) {
             for (int i = 0; i < size; i++) {
                 if (Objects.equals(o, elements[i])) {
@@ -80,10 +81,10 @@ public class CustomList<T> implements List<T> {
                     System.arraycopy(elements, i + 1, removeCopyArray, i, elements.length - i - 1);
                     elements = removeCopyArray;
                     size -= 1;
-                    return true;
+                    overallResult = true;
                 }
             }
-            return false;
+            return overallResult;
         } else {
             throw new NullPointerException("Cannot remove null from a list");
         }
@@ -143,9 +144,9 @@ public class CustomList<T> implements List<T> {
             boolean overallResult = false;
             for (int i = 0; i < size; i++) {
                 if (!c.contains(elements[i])) {
-                    boolean result = remove(elements[i]);
+                    boolean result = remove(elements[i--]);
                     if (result) overallResult = true;
-                } else throw new NullPointerException("Cannot retain null element");
+                }
             }
             return overallResult;
         } else throw new NullPointerException("Cannot retail null collection");
@@ -191,7 +192,7 @@ public class CustomList<T> implements List<T> {
 
     @Override
     public T remove(int index) {
-        if (index < size && index > 0) {
+        if (index < size && index >= 0) {
             T removed = (T) elements[index];
             Object[] removeCopyArray = new Object[elements.length - 1];
             System.arraycopy(elements, 0, removeCopyArray, 0, index);
