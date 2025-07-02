@@ -9,28 +9,20 @@ public class CustomListDemo {
         //creation
         CustomList<String> aList = new CustomList<String>();
 
-        class PrintArray {
-            void printArray() {
-                System.out.println(Arrays.toString(aList.toArray()));
-            }
-        }
-
-        PrintArray util = new PrintArray();
-
         //adding elements
         aList.add("str1");
-        util.printArray();
+        aList.printArray();
 
         //adding element by index
         aList.add(0, "str2");
-        util.printArray();
+        aList.printArray();
 
         //add all elements
         CustomList<String> addList = new CustomList<String>();
         addList.add("str3");
         addList.add("str4");
         aList.addAll(addList);
-        util.printArray();
+        aList.printArray();
 
         //contain elements
         System.out.println(aList.contains("str3"));
@@ -41,20 +33,20 @@ public class CustomListDemo {
 
         //removing elements
         aList.add("str3");
-        util.printArray();
+        aList.printArray();
         aList.remove("str3");
-        util.printArray();
+        aList.printArray();
 
         //removing element by
         aList.remove(1);
-        util.printArray();
+        aList.printArray();
 
         //remove all elements
         CustomList<String> removeList = new CustomList<String>();
         removeList.add("str4");
         removeList.add("str2");
         aList.removeAll(removeList);
-        util.printArray();
+        aList.printArray();
 
         //retain all elements
         aList.add("str1");
@@ -64,7 +56,7 @@ public class CustomListDemo {
         retainList.add("str2");
         retainList.add("str3");
         aList.retainAll(retainList);
-        util.printArray();
+        aList.printArray();
 
         //indexOf element
         System.out.println(aList.indexOf("str3"));
@@ -72,7 +64,7 @@ public class CustomListDemo {
 
         //lastIndexOf element
         aList.add("str3");
-        util.printArray();
+        aList.printArray();
         System.out.println(aList.lastIndexOf("str3"));
         System.out.println(aList.lastIndexOf("nonexisting"));
 
@@ -93,7 +85,7 @@ public class CustomListDemo {
 
         //setting elements
         aList.set(0, "str4");
-        util.printArray();
+        aList.printArray();
 
         //getting elements
         System.out.println(aList.get(0));
@@ -105,12 +97,12 @@ public class CustomListDemo {
         for (int i = 0; i < 10; i++) {
             aList.add("strX");
         }
-        util.printArray();
+        aList.printArray();
 
         //clear
         aList.clear();
         System.out.println(aList.size());
         System.out.println(aList.isEmpty());
-        util.printArray();
+        aList.printArray();
     }
 }

@@ -262,4 +262,8 @@ public class CustomList<T> implements List<T> {
         }
         return hashCode;
     }
+
+    public void printArray() {
+        System.out.println(Arrays.toString(toArray()));
+    }
 }
