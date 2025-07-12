@@ -1,5 +1,29 @@
 package hw03;
 
-//based on custom linked list
-public class CustomStack {
+public class CustomStack<T> {
+    private final CustomLinkedList<T> list;
+
+    public CustomStack() {
+        this.list = new CustomLinkedList<>();
+    }
+
+    public T pop() {
+        return list.pollFirst();
+    }
+
+    public T peek() {
+        return list.peekFirst();
+    }
+
+    public void push(T element) {
+        list.offerFirst(element);
+    }
+
+    public int size() {
+        return list.size();
+    }
+
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
 }

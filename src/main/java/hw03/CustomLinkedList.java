@@ -339,7 +339,7 @@ public class CustomLinkedList<T> implements List<T>, Deque<T> {
             throw new IndexOutOfBoundsException("Cannot set this index in list");
         }
         Node<T> el = first;
-        for (int i = 0; i <= index; i++) {
+        for (int i = 0; i < index; i++) {
             el = el.next;
         }
         T prevItem = el.item;
