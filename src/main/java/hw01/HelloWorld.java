@@ -1,3 +1,5 @@
+package hw01;
+
 /**
  * This is a hello world program from the 1-st part of the assignment
  */

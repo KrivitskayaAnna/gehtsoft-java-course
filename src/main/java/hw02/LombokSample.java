@@ -1,3 +1,5 @@
+package hw02;
+
 import lombok.*;
 import lombok.experimental.Accessors;
 

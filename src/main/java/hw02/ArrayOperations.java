@@ -1,3 +1,5 @@
+package hw02;
+
 import java.util.Arrays;
 
 public class ArrayOperations {

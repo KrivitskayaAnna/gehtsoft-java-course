@@ -1,7 +1,10 @@
+package hw02;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -10,7 +13,9 @@ import java.util.ArrayList;
 public class TestRunner {
     public static void runTestsByClassName(String className) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Class<?> testClass = Class.forName(className);
-        Object object = testClass.getDeclaredConstructor().newInstance();
+        Constructor<?> constr = testClass.getDeclaredConstructor();
+        constr.setAccessible(true);
+        Object object = constr.newInstance();
         Method[] methods = testClass.getDeclaredMethods();
         ArrayList<Method> beforeEach = new ArrayList<>();
         ArrayList<Method> afterEach = new ArrayList<>();
@@ -34,10 +39,12 @@ public class TestRunner {
         System.out.println("Tests results:");
         for (Method method : tests) {
             for (Method beforeM : beforeEach) {
+                beforeM.setAccessible(true);
                 beforeM.invoke(object);
             }
             long startTime = System.currentTimeMillis();
             try {
+                method.setAccessible(true);
                 method.invoke(object);
                 passed += 1;
                 long endTime = System.currentTimeMillis();
@@ -50,6 +57,7 @@ public class TestRunner {
                 System.out.printf("\u2718 Test %s failed (%d millis), error: %s\n", method.getName(), (endTime - startTime), e.getCause().getMessage());
             }
             for (Method afterM : afterEach) {
+                afterM.setAccessible(true);
                 afterM.invoke(object);
             }
         }
@@ -61,10 +69,10 @@ public class TestRunner {
     }
 
     public static void main(String[] args) throws InvocationTargetException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InstantiationException {
-        runTestsByClassName("CustomListTests");
-        runTestsByClassName("FibonacciAlgorithmsTests");
+        runTestsByClassName("hw01.CustomListTests");
+        runTestsByClassName("hw02.FibonacciAlgorithmsTests");
 
-//        Class scanned: CustomListTests
+//        Class scanned: hw01.CustomListTests
 //        Tests discovered: 43
 //        Tests results:
 //✓ Test setUpCreatesEmptyList succeeded (2 millis)
@@ -116,7 +124,7 @@ public class TestRunner {
 //        Total time: 16 millis
 //        Success rate: 100.00 %
 
-//        Class scanned: FibonacciAlgorithmsTests
+//        Class scanned: hw02.FibonacciAlgorithmsTests
 //        Tests discovered: 1
 //        Tests results:
 //✓ Test algorithmsProduceSameResults succeeded (89 millis)
