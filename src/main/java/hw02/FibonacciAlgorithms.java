@@ -28,18 +28,18 @@ public class FibonacciAlgorithms {
      * redundant calculations. Each number from 0 to n is
      * calculated exactly once.
      */
-    public static HashMap<Integer, Long> cache = new HashMap<>();
-
-    static {
+    public static long fibonacciMemoized(int n) {
+        HashMap<Integer, Long> cache = new HashMap<>();
         cache.put(0, 0L);
         cache.put(1, 1L);
+        return fibonacciWithCache(n, cache);
     }
 
-    public static long fibonacciMemoized(int n) {
+    private static long fibonacciWithCache(int n, HashMap<Integer, Long> cache) {
         if (n < 0) throw new IllegalArgumentException("n should be grater than 0");
         else if (cache.containsKey(n)) return cache.get(n);
         else {
-            long result = fibonacciMemoized(n - 1) + fibonacciMemoized(n - 2);
+            long result = fibonacciWithCache(n - 1, cache) + fibonacciWithCache(n - 2, cache);
             cache.put(n, result);
             return result;
         }
@@ -48,7 +48,7 @@ public class FibonacciAlgorithms {
     /**
      * Iterative implementation of Fibonacci sequence
      * Time Complexity: O(n) - single loop from 0 to n
-     * Space Complexity: O(1) - constant space usage
+     * Space Complexity: O(n) - saving n numbers in array
      * <p>
      * Explanation: Uses bottom-up approach with only two variables
      * to track previous values, eliminating recursion overhead.
