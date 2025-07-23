@@ -1,70 +1,116 @@
 package hw04;
 
-import hw03.ListPerformanceTests;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.HashMap;
 import java.util.Map;
 
+
+@State(Scope.Benchmark)
+@BenchmarkMode(Mode.AverageTime)
+@Warmup(iterations = 1, time = 1)
+@Measurement(iterations = 1, time = 1)
+@Fork(1)
 public class CustomHashMapPerformanceTests {
-    public static void addMillion(Map<Integer, String> aMap) {
-        for (int i = 0; i < 1_000_000; i++) {
-            aMap.put(i, "value" + i);
+    @Param({"1000", "10000", "100000", "1000000"})
+    private int size;
+
+    private HashMap<Integer, String> javaMap;
+    private CustomHashMap<Integer, String> customMap;
+
+    @Setup(Level.Trial)
+    public void setup() {
+        javaMap = new HashMap<>();
+        customMap = new CustomHashMap<>();
+    }
+
+    public void putTest(Blackhole bh, Map<Integer, String> testMap) {
+        for (int i = 0; i < size; i++) {
+            testMap.put(i, "value" + i);
+        }
+        bh.consume(testMap);
+    }
+
+    public void addRemoveTest(Blackhole bh, Map<Integer, String> testMap) {
+        for (int i = 0; i < size; i++) {
+            testMap.put(i, "value" + i);
+        }
+        bh.consume(testMap);
+        for (int i = 0; i < size; i++) {
+            testMap.remove(i);
+            bh.consume(testMap);
         }
     }
 
-    public static void getMillion(Map<Integer, String> aMap) {
-        for (int i = 0; i < 1_000_000; i++) {
-            aMap.get(i);
+    public void addGetTest(Blackhole bh, Map<Integer, String> testMap) {
+        for (int i = 0; i < size; i++) {
+            testMap.put(i, "value" + i);
+            bh.consume(testMap);
+        }
+        for (int i = 0; i < size; i++) {
+            bh.consume(testMap.get(i));
         }
     }
 
-    public static void addRemove(Map<Integer, String> aMap) {
-        for (int i = 0; i < 10_000; i++) {
-            aMap.put(i, "value" + i);
-        }
-        for (int i = 0; i < 10_000; i++) {
-            aMap.remove(i);
-        }
+    @Benchmark
+    public void javaPut(Blackhole bh) {
+        putTest(bh, javaMap);
     }
 
-    public static void performanceTest(Boolean print) throws Throwable {
-        HashMap<Integer, String> hashMap = new HashMap<>();
-        CustomHashMap<Integer, String> customHashMap = new CustomHashMap<>();
-
-        ListPerformanceTests.measureComplexity(() -> addRemove(hashMap), "hashMap addRemove", print);
-        ListPerformanceTests.measureComplexity(() -> addRemove(customHashMap), "customHashMap addRemove", print);
-
-        ListPerformanceTests.measureComplexity(() -> addMillion(hashMap), "hashMap addMillion", print);
-        ListPerformanceTests.measureComplexity(() -> addMillion(customHashMap), "customHashMap addMillion", print);
-
-        ListPerformanceTests.measureComplexity(() -> getMillion(hashMap), "hashMap getMillion", print);
-        ListPerformanceTests.measureComplexity(() -> getMillion(customHashMap), "customHashMap getMillion", print);
-
+    @Benchmark
+    public void customPut(Blackhole bh) {
+        putTest(bh, customMap);
     }
 
-    public static void main(String[] args) throws Throwable {
-        //warm-up
-        for (int i = 0; i <= 50; i++) {
-            performanceTest(false);
-        }
-
-        performanceTest(true);
+    @Benchmark
+    public void javaAddRemove(Blackhole bh) {
+        addRemoveTest(bh, javaMap);
     }
+
+    @Benchmark
+    public void customAddRemove(Blackhole bh) {
+        addRemoveTest(bh, customMap);
+    }
+
+    @Benchmark
+    public void javaAddGet(Blackhole bh) {
+        addGetTest(bh, javaMap);
+    }
+
+    @Benchmark
+    public void customAddGet(Blackhole bh) {
+        addGetTest(bh, customMap);
+    }
+
 
     //the metrics on java hashMap and custom hashMap are almost the same
     //despite the fact that in custom hashMap we skipped red-black tree transformation that happens on java hash map when it has lots of collisions
 
 //    tests results:
-//    Operation: hashMap addRemove, exec time (millis): 0
-//    Operation: hashMap addRemove, memory used (MB): 2.00
-//    Operation: customHashMap addRemove, exec time (millis): 0
-//    Operation: customHashMap addRemove, memory used (MB): 1.49
-//    Operation: hashMap addMillion, exec time (millis): 100
-//    Operation: hashMap addMillion, memory used (MB): 130.38
-//    Operation: customHashMap addMillion, exec time (millis): 82
-//    Operation: customHashMap addMillion, memory used (MB): 156.20
-//    Operation: hashMap getMillion, exec time (millis): 9
-//    Operation: hashMap getMillion, memory used (MB): 16.00
-//    Operation: customHashMap getMillion, exec time (millis): 7
-//    Operation: customHashMap getMillion, memory used (MB): 16.00
+//Benchmark                                       (size)  Mode  Cnt   Score   Error  Units
+//    CustomHashMapPerformanceTests.customAddGet        1000  avgt       ≈ 10⁻⁵           s/op
+//    CustomHashMapPerformanceTests.customAddGet       10000  avgt       ≈ 10⁻⁴           s/op
+//    CustomHashMapPerformanceTests.customAddGet      100000  avgt        0.005           s/op
+//    CustomHashMapPerformanceTests.customAddGet     1000000  avgt        0.041           s/op
+//    CustomHashMapPerformanceTests.customAddRemove     1000  avgt       ≈ 10⁻⁵           s/op
+//    CustomHashMapPerformanceTests.customAddRemove    10000  avgt       ≈ 10⁻⁴           s/op
+//    CustomHashMapPerformanceTests.customAddRemove   100000  avgt        0.003           s/op
+//    CustomHashMapPerformanceTests.customAddRemove  1000000  avgt        0.028           s/op
+//    CustomHashMapPerformanceTests.customPut           1000  avgt       ≈ 10⁻⁵           s/op
+//    CustomHashMapPerformanceTests.customPut          10000  avgt       ≈ 10⁻⁴           s/op
+//    CustomHashMapPerformanceTests.customPut         100000  avgt        0.004           s/op
+//    CustomHashMapPerformanceTests.customPut        1000000  avgt        0.031           s/op
+//    CustomHashMapPerformanceTests.javaAddGet          1000  avgt       ≈ 10⁻⁵           s/op
+//    CustomHashMapPerformanceTests.javaAddGet         10000  avgt       ≈ 10⁻⁴           s/op
+//    CustomHashMapPerformanceTests.javaAddGet        100000  avgt        0.003           s/op
+//    CustomHashMapPerformanceTests.javaAddGet       1000000  avgt        0.043           s/op
+//    CustomHashMapPerformanceTests.javaAddRemove       1000  avgt       ≈ 10⁻⁵           s/op
+//    CustomHashMapPerformanceTests.javaAddRemove      10000  avgt       ≈ 10⁻⁴           s/op
+//    CustomHashMapPerformanceTests.javaAddRemove     100000  avgt        0.003           s/op
+//    CustomHashMapPerformanceTests.javaAddRemove    1000000  avgt        0.029           s/op
+//    CustomHashMapPerformanceTests.javaPut             1000  avgt       ≈ 10⁻⁵           s/op
+//    CustomHashMapPerformanceTests.javaPut            10000  avgt       ≈ 10⁻⁴           s/op
+//    CustomHashMapPerformanceTests.javaPut           100000  avgt        0.003           s/op
+//    CustomHashMapPerformanceTests.javaPut          1000000  avgt        0.034           s/op
 }
