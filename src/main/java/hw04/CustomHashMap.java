@@ -184,7 +184,7 @@ public class CustomHashMap<K, V> implements Map<K, V> {
 
     @Override
     public Collection<V> values() {
-        return entrySet().stream().map(Entry::getValue).collect(Collectors.toSet());
+        return entrySet().stream().map(Entry::getValue).collect(Collectors.toList());
     }
 
     @Override

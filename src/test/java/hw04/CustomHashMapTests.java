@@ -212,6 +212,16 @@ class CustomHashMapTests {
     }
 
     @Test
+    void valuesShouldPreserveDuplicates() {
+        hashMap.put(0, "Hello1");
+        hashMap.put(16, "Hello1");
+        Set<String> keysSet = new HashSet<>();
+        keysSet.add("Hello1");
+        Assertions.assertEquals(hashMap.values().size(), 2);
+        Assertions.assertTrue(hashMap.values().containsAll(keysSet));
+    }
+
+    @Test
     void entrySetShouldReturnEmptyIfNoEntries() {
         Assertions.assertTrue(hashMap.entrySet().isEmpty());
     }
