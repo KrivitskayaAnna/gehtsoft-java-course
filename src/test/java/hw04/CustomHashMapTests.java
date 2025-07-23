@@ -4,7 +4,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.AbstractMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 class CustomHashMapTests {
     private CustomHashMap<Integer, String> hashMap;
@@ -172,5 +175,55 @@ class CustomHashMapTests {
         Assertions.assertFalse(hashMap.containsKey(1));
     }
 
-    //TODO: tests on keySet, values, entrySet
+    @Test
+    void keySetShouldReturnEmptyIfNoEntries() {
+        Assertions.assertTrue(hashMap.keySet().isEmpty());
+    }
+
+    @Test
+    void keySetShouldReturnKeys() {
+        hashMap.put(0, "Hello1");
+        hashMap.put(16, "Hello2");
+        hashMap.put(10, "Hello3");
+        Set<Integer> keysSet = new HashSet<>();
+        keysSet.add(0);
+        keysSet.add(16);
+        keysSet.add(10);
+        Assertions.assertEquals(hashMap.keySet().size(), 3);
+        Assertions.assertTrue(hashMap.keySet().containsAll(keysSet));
+    }
+
+    @Test
+    void valuesShouldReturnEmptyIfNoEntries() {
+        Assertions.assertTrue(hashMap.values().isEmpty());
+    }
+
+    @Test
+    void valuesShouldReturnValues() {
+        hashMap.put(0, "Hello1");
+        hashMap.put(16, "Hello2");
+        hashMap.put(10, "Hello3");
+        Set<String> keysSet = new HashSet<>();
+        keysSet.add("Hello1");
+        keysSet.add("Hello2");
+        keysSet.add("Hello3");
+        Assertions.assertEquals(hashMap.values().size(), 3);
+        Assertions.assertTrue(hashMap.values().containsAll(keysSet));
+    }
+
+    @Test
+    void entrySetShouldReturnEmptyIfNoEntries() {
+        Assertions.assertTrue(hashMap.entrySet().isEmpty());
+    }
+
+    @Test
+    void entrySetShouldReturnEntries() {
+        hashMap.put(0, "Hello1");
+        hashMap.put(16, "Hello2");
+        hashMap.put(10, "Hello3");
+        Assertions.assertEquals(hashMap.entrySet().size(), 3);
+        Assertions.assertTrue(hashMap.entrySet().contains(new AbstractMap.SimpleEntry<>(0, "Hello1")));
+        Assertions.assertTrue(hashMap.entrySet().contains(new AbstractMap.SimpleEntry<>(16, "Hello2")));
+        Assertions.assertTrue(hashMap.entrySet().contains(new AbstractMap.SimpleEntry<>(10, "Hello3")));
+    }
 }

@@ -145,20 +145,21 @@ public class CustomHashMap<K, V> implements Map<K, V> {
     public V remove(Object key) {
         int index = getIndexByKey((K) key);
         Node<K, V> foundNode = table[index];
-        for (int i = 0; ; i++) {
-            if (foundNode == null) {
-                return null;
-            }
+        Node<K, V> previous = null;
+        while (foundNode != null) {
             if (Objects.equals(foundNode.key, key)) {
-                table[index] = foundNode.next; //TODO: fix remove from middle of chain
+                if (previous != null) {
+                    previous.next = foundNode.next;
+                } else {
+                    table[index] = foundNode.next;
+                }
                 size--;
                 return foundNode.value;
             }
-            if (foundNode.next == null) {
-                return null;
-            }
+            previous = foundNode;
             foundNode = foundNode.next;
         }
+        return null;
     }
 
     @Override
