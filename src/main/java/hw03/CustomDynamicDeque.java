@@ -1,27 +1,72 @@
 package hw03;
 
-import hw01.CustomList;
-
-import java.util.Collection;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class CustomDynamicDeque<T> implements Deque<T> {
-    private final CustomList<T> list;
+    private final int initSize = 10;
+    private Object[] elements;
+    private int firstElementIdx;
+    private int lastElementIdx;
+    private int size;
 
     public CustomDynamicDeque() {
-        this.list = new CustomList<>();
+        elements = new Object[initSize];
+        firstElementIdx = 0;
+        lastElementIdx = 0;
+        size = 0;
+    }
+
+    private void resize() {
+        int newSize = elements.length * 2;
+        Object[] newElements = new Object[newSize];
+        int numElementsTillEnd = elements.length - firstElementIdx;
+        System.arraycopy(elements, firstElementIdx, newElements, 0, numElementsTillEnd);
+        System.arraycopy(elements, 0, newElements, numElementsTillEnd, size - numElementsTillEnd);
+        firstElementIdx = 0;
+        lastElementIdx = size;
+        elements = newElements;
+    }
+
+    private int idxToLeft(int idx) {
+        int nextIdx;
+        if (idx == 0) {
+            nextIdx = elements.length - 1;
+        } else nextIdx = idx - 1;
+        return nextIdx;
+    }
+
+    private int idxToRight(int idx) {
+        int nextIdx;
+        if (idx == elements.length - 1) {
+            nextIdx = 0;
+        } else nextIdx = idx + 1;
+        return nextIdx;
     }
 
     @Override
     public void addFirst(T t) {
-        list.add(0, t);
+        if (t == null) {
+            throw new NullPointerException("Cannot add null");
+        }
+        if (size == elements.length) {
+            resize();
+        }
+        firstElementIdx = idxToLeft(firstElementIdx);
+        elements[firstElementIdx] = t;
+        size++;
     }
 
     @Override
     public void addLast(T t) {
-        list.add(size() - 1, t);
+        if (t == null) {
+            throw new NullPointerException("Cannot add null");
+        }
+        if (size == elements.length) {
+            resize();
+        }
+        elements[lastElementIdx] = t;
+        lastElementIdx = idxToRight(lastElementIdx);
+        size++;
     }
 
     @Override
@@ -32,86 +77,122 @@ public class CustomDynamicDeque<T> implements Deque<T> {
 
     @Override
     public boolean offerLast(T t) {
-        return list.add(t);
+        addLast(t);
+        return true;
     }
 
     @Override
     public T removeFirst() {
-        return list.remove(0);
+        if (size == 0) {
+            throw new NoSuchElementException("Deque is empty");
+        }
+        T avalue = (T) elements[firstElementIdx];
+        elements[firstElementIdx] = null;
+        firstElementIdx = idxToRight(firstElementIdx);
+        size--;
+        return avalue;
     }
 
     @Override
     public T removeLast() {
-        return list.remove(size() - 1);
+        if (size == 0) {
+            throw new NoSuchElementException("Deque is empty");
+        }
+        int lastFilledIdx = idxToLeft(lastElementIdx);
+        T avalue = (T) elements[lastFilledIdx];
+        elements[lastFilledIdx] = null;
+        lastElementIdx = lastFilledIdx;
+        size--;
+        return avalue;
     }
 
     @Override
     public T pollFirst() {
-        if (isEmpty()) return null;
         return removeFirst();
     }
 
     @Override
     public T pollLast() {
-        if (isEmpty()) return null;
         return removeLast();
     }
 
     @Override
     public T getFirst() {
-        return list.get(0);
+        if (size == 0) {
+            throw new NoSuchElementException("Deque is empty");
+        }
+        return peekFirst();
     }
 
     @Override
     public T getLast() {
-        return list.get(size() - 1);
+        if (size == 0) {
+            throw new NoSuchElementException("Deque is empty");
+        }
+        return peekLast();
     }
 
     @Override
     public T peekFirst() {
-        if (isEmpty()) return null;
-        return getFirst();
+        return (T) elements[firstElementIdx];
     }
 
     @Override
     public T peekLast() {
-        if (isEmpty()) return null;
-        return getLast();
+        int lastFilledIdx = idxToLeft(lastElementIdx);
+        return (T) elements[lastFilledIdx];
+    }
+
+    private boolean removeIdx(int currentIdx) {
+        while (currentIdx != lastElementIdx) {
+            int nextIdx = idxToRight(currentIdx);
+            elements[currentIdx] = elements[nextIdx];
+            currentIdx = nextIdx;
+        }
+        int lastFilledIdx = idxToLeft(lastElementIdx);
+        elements[lastFilledIdx] = null;
+        lastElementIdx = lastFilledIdx;
+        if (currentIdx == firstElementIdx) {
+            firstElementIdx = idxToRight(firstElementIdx);
+        }
+        size--;
+        return true;
     }
 
     @Override
     public boolean removeFirstOccurrence(Object o) {
-        if (o != null) {
-            for (int i = 0; i < list.size(); i++) {
-                if (list.get(i) == o) {
-                    list.remove(i);
-                    return true;
-                }
+        if (o == null) {
+            throw new NullPointerException("Cannot remove null");
+        }
+        int currentIdx = firstElementIdx;
+        for (int idx = 0; idx < size; idx++) {
+            if (Objects.equals(elements[currentIdx], o)) {
+                return removeIdx(currentIdx);
             }
-        } else {
-            throw new NullPointerException("Cannot remove null from a list");
+            currentIdx = idxToRight(currentIdx);
         }
         return false;
     }
 
     @Override
     public boolean removeLastOccurrence(Object o) {
-        if (o != null) {
-            for (int i = list.size() - 1; i >= 0; i--) {
-                if (list.get(i) == o) {
-                    list.remove(i);
-                    return true;
-                }
+        if (o == null) {
+            throw new NullPointerException("Cannot remove null");
+        }
+        int currentIdx = lastElementIdx;
+        for (int idx = size - 1; idx >= 0; idx--) {
+            if (Objects.equals(elements[currentIdx], o)) {
+                return removeIdx(currentIdx);
             }
-        } else {
-            throw new NullPointerException("Cannot remove null from a list");
+            currentIdx = idxToLeft(currentIdx);
         }
         return false;
     }
 
     @Override
     public boolean add(T t) {
-        return list.add(t);
+        addLast(t);
+        return true;
     }
 
     @Override
@@ -131,10 +212,7 @@ public class CustomDynamicDeque<T> implements Deque<T> {
 
     @Override
     public T element() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("Deque is empty");
-        }
-        return peek();
+        return getFirst();
     }
 
     @Override
@@ -144,22 +222,44 @@ public class CustomDynamicDeque<T> implements Deque<T> {
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        return list.addAll(c);
+        for (T el : c) {
+            addLast(el);
+        }
+        return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return list.removeAll(c);
+        boolean result = false;
+        for (Object el : c) {
+            if (removeFirstOccurrence(el)) result = true;
+        }
+        return result;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return list.retainAll(c);
+        if (c == null) {
+            throw new NullPointerException("Cannot retail null collection");
+        }
+        boolean overallResult = false;
+        int currentIdx = firstElementIdx;
+        for (int i = 0; i < size; i++) {
+            if (!c.contains(elements[currentIdx])) {
+                boolean result = removeIdx(currentIdx);
+                if (result) overallResult = true;
+            }
+            currentIdx = idxToRight(currentIdx);
+        }
+        return overallResult;
     }
 
     @Override
     public void clear() {
-        list.clear();
+        elements = new Object[initSize];
+        firstElementIdx = 0;
+        lastElementIdx = 0;
+        size = 0;
     }
 
     @Override
@@ -174,42 +274,71 @@ public class CustomDynamicDeque<T> implements Deque<T> {
 
     @Override
     public boolean remove(Object o) {
-        return list.remove(o);
+        return removeFirstOccurrence(o);
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return list.containsAll(c);
+        for (Object el : c) {
+            if (!contains(el)) return false;
+        }
+        return true;
     }
 
     @Override
     public boolean contains(Object o) {
-        return list.contains(o);
+        if (o == null) {
+            throw new NullPointerException("Cannot contain null");
+        }
+        int currentIdx = firstElementIdx;
+        for (int i = 0; i < size; i++) {
+            if (Objects.equals(elements[currentIdx], o)) {
+                return true;
+            }
+            currentIdx = idxToRight(currentIdx);
+        }
+        return false;
     }
 
     @Override
     public int size() {
-        return list.size();
+        return size;
     }
 
     @Override
     public boolean isEmpty() {
-        return list.isEmpty();
+        return size == 0;
     }
 
     @Override
     public Iterator<T> iterator() {
-        return list.iterator();
+        return null;
     }
 
     @Override
     public Object[] toArray() {
-        return list.toArray();
+        Object[] newArray = new Object[size];
+        if (firstElementIdx < lastElementIdx) {
+            System.arraycopy(elements, firstElementIdx, newArray, 0, size);
+        } else {
+            int numElementsTillEnd = elements.length - firstElementIdx;
+            System.arraycopy(elements, firstElementIdx, newArray, 0, numElementsTillEnd);
+            System.arraycopy(elements, 0, newArray, numElementsTillEnd, size - numElementsTillEnd);
+        }
+        return newArray;
     }
 
     @Override
     public <T1> T1[] toArray(T1[] a) {
-        return list.toArray(a);
+        Object[] newArray = toArray();
+        T1[] typedArray;
+        if (a.length < size) {
+            typedArray = (T1[]) (new Object[size]);
+        } else {
+            typedArray = a;
+        }
+        System.arraycopy(newArray, 0, typedArray, 0, size);
+        return typedArray;
     }
 
     @Override
