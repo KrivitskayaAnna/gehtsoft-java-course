@@ -28,19 +28,11 @@ public class CustomDynamicDeque<T> implements Deque<T> {
     }
 
     private int idxToLeft(int idx) {
-        int nextIdx;
-        if (idx == 0) {
-            nextIdx = elements.length - 1;
-        } else nextIdx = idx - 1;
-        return nextIdx;
+        return (idx - 1 + elements.length) % elements.length;
     }
 
     private int idxToRight(int idx) {
-        int nextIdx;
-        if (idx == elements.length - 1) {
-            nextIdx = 0;
-        } else nextIdx = idx + 1;
-        return nextIdx;
+        return (idx + 1) % elements.length;
     }
 
     @Override
