@@ -8,7 +8,7 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
-public class BenchmarkRunner {
+public class PlatformThreadsPerformanceTestsRunner {
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
                 .include(PlatformThreadsPerformanceTests.class.getSimpleName())
