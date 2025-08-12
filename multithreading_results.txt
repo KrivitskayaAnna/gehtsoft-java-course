@@ -1,0 +1,8 @@
+Thread count: 1, method: stream, time: 48 millis
+Thread count: 1, method: threads, time: 298 millis
+Thread count: 10, method: stream, time: 24 millis
+Thread count: 10, method: threads, time: 100 millis
+Thread count: 100, method: stream, time: 22 millis
+Thread count: 100, method: threads, time: 32 millis
+Thread count: 1000, method: stream, time: 35 millis
+Thread count: 1000, method: threads, time: 291 millis
