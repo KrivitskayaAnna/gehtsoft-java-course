@@ -1,22 +1,17 @@
 package hw06;
 
-import hw03.CustomLinkedList;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class CustomExecutorService implements ExecutorService {
-    private int corePoolSize;
-    private boolean useVirtualThreads;
-    private BlockingQueue<Runnable> taskQueue;
+    private final BlockingQueue<Runnable> taskQueue;
+    private final AtomicInteger numTasksRunning;
     private final List<Thread> workerThreads;
     private boolean allowNewTasks = true;
 
-    private void runTasks() {
+    private void pollTasks() {
         while (allowNewTasks || !taskQueue.isEmpty()) {
             Runnable task = taskQueue.poll();
             if (task != null) {
@@ -26,24 +21,22 @@ public class CustomExecutorService implements ExecutorService {
     }
 
     private Runnable pollForTasks() {
-        return () -> runTasks();
+        return () -> pollTasks();
     }
 
     public CustomExecutorService(int corePoolSize, boolean useVirtualThreads) {
-        this.corePoolSize = corePoolSize;
-        this.useVirtualThreads = useVirtualThreads;
         this.taskQueue = new TaskQueue();
         this.workerThreads = new ArrayList<>();
+        this.numTasksRunning = new AtomicInteger(0);
         for (int i = 0; i < corePoolSize; i++) {
             Thread.Builder worker;
             if (useVirtualThreads) {
-                worker = Thread.ofVirtual();
+                worker = Thread.ofVirtual(); //TODO: "spawn a new thread for each tasks" ?
             } else {
                 worker = Thread.ofPlatform();
             }
             Thread thread = worker.start(pollForTasks());
             workerThreads.add(thread);
-
         }
     }
 
@@ -54,7 +47,15 @@ public class CustomExecutorService implements ExecutorService {
 
     @Override
     public List<Runnable> shutdownNow() {
-        return List.of(); //TODO
+        allowNewTasks = false;
+        List<Runnable> existingTasks = new ArrayList<>();
+        for (Thread worker : workerThreads) {
+            worker.interrupt();
+        }
+        while (!taskQueue.isEmpty()) {
+            existingTasks.add(taskQueue.poll());
+        }
+        return existingTasks;
     }
 
     @Override
@@ -64,35 +65,32 @@ public class CustomExecutorService implements ExecutorService {
 
     @Override
     public boolean isTerminated() {
-        return !allowNewTasks; //TODO: what is the difference
+        return (!allowNewTasks && (numTasksRunning.get() == 0) && (taskQueue.isEmpty()));
     }
 
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        return false; //TODO
+        long endTime = System.nanoTime() + unit.toNanos(timeout);
+        while (!isTerminated()) {
+            if (System.nanoTime() > endTime) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public <T> Future<T> submit(Callable<T> task) {
-        Runnable runnable = () -> {
-            try {
-                task.call();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        };
-        return submit(runnable, null);
+        FutureTask<T> futureTask = new FutureTask<>(task);
+        execute(futureTask);
+        return futureTask;
     }
 
     @Override
     public <T> Future<T> submit(Runnable task, T result) {
-        if ((task != null) & (allowNewTasks)) {
-            FutureTask<T> futureTask = new FutureTask<>(task, result);
-            execute(task);
-            return futureTask;
-        } else if (!allowNewTasks) {
-            throw new RejectedExecutionException("Pool was shut down");
-        } else throw new NullPointerException("Command is null");
+        FutureTask<T> futureTask = new FutureTask<>(task, result);
+        execute(futureTask);
+        return futureTask;
     }
 
     @Override
@@ -122,27 +120,28 @@ public class CustomExecutorService implements ExecutorService {
 
     @Override
     public void execute(Runnable command) {
-        if ((command != null) & (allowNewTasks)) {
-            taskQueue.add(command);
-        } else if (!allowNewTasks) {
+        if (!allowNewTasks) {
             throw new RejectedExecutionException("Pool was shut down");
-        } else throw new NullPointerException("Command is null");
+        }
+        if (command == null) {
+            throw new NullPointerException("Command is null");
+        }
+        taskQueue.add(command);
     }
 
     private class TaskQueue implements BlockingQueue<Runnable> {
         private final ReentrantLock lock = new ReentrantLock();
-        private final CustomLinkedList<Runnable> list;
+        private final LinkedList<Runnable> list;
 
         public TaskQueue() {
-            this.list = new CustomLinkedList<>();
+            this.list = new LinkedList<>();
         }
 
         @Override
         public boolean add(Runnable runnable) {
             lock.lock();
             try {
-                boolean taskAdded = list.add(runnable);
-                return taskAdded;
+                return list.add(runnable);
             } finally {
                 lock.unlock();
             }
@@ -250,7 +249,12 @@ public class CustomExecutorService implements ExecutorService {
 
         @Override
         public boolean isEmpty() {
-            return false;
+            lock.lock();
+            try {
+                return list.isEmpty();
+            } finally {
+                lock.unlock();
+            }
         }
 
         @Override
