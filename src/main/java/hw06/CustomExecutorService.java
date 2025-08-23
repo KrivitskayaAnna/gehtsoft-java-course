@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class CustomExecutorService implements ExecutorService {
     private final BlockingQueue<Runnable> taskQueue;
-    private final AtomicInteger numTasksRunning;
+    private AtomicInteger numTasksRunning;
     private final List<Thread> workerThreads;
     private boolean allowNewTasks = true;
 
@@ -55,6 +55,7 @@ public class CustomExecutorService implements ExecutorService {
         while (!taskQueue.isEmpty()) {
             existingTasks.add(taskQueue.poll());
         }
+        numTasksRunning.set(0);
         return existingTasks;
     }
 
