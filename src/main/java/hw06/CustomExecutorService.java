@@ -72,7 +72,7 @@ public class CustomExecutorService implements ExecutorService {
     }
 
     @Override
-    public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+    public boolean awaitTermination(long timeout, TimeUnit unit) {
         long endTime = System.nanoTime() + unit.toNanos(timeout);
         while (!isTerminated()) {
             if (System.nanoTime() > endTime) {

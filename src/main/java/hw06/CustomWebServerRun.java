@@ -19,7 +19,7 @@ public class CustomWebServerRun {
             System.out.println("Platform thread server: http://localhost:8081");
 
             // Keep servers running
-            Thread.sleep(100000); // Run for 1 minute
+            Thread.sleep(400000); // Run for 1 minute
 
         } catch (Exception e) {
             e.printStackTrace();
