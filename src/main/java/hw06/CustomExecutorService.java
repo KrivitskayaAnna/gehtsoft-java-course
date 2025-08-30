@@ -15,7 +15,9 @@ public class CustomExecutorService implements ExecutorService {
         while (allowNewTasks || !taskQueue.isEmpty()) {
             Runnable task = taskQueue.poll();
             if (task != null) {
+                System.out.printf("Worker %s start running task\n", Thread.currentThread().getName());
                 task.run();
+                System.out.printf("Worker %s finished running task\n", Thread.currentThread().getName());
             }
         }
     }
@@ -31,11 +33,11 @@ public class CustomExecutorService implements ExecutorService {
         for (int i = 0; i < corePoolSize; i++) {
             Thread.Builder worker;
             if (useVirtualThreads) {
-                worker = Thread.ofVirtual(); //TODO: "spawn a new thread for each tasks" ?
+                worker = Thread.ofVirtual();
             } else {
                 worker = Thread.ofPlatform();
             }
-            Thread thread = worker.start(pollForTasks());
+            Thread thread = worker.name("worker-" + i).start(pollForTasks());
             workerThreads.add(thread);
         }
     }
