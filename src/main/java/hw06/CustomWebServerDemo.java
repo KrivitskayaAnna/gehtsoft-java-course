@@ -71,7 +71,7 @@ public class CustomWebServerDemo {
         sendClientRequest("GET", "/", "");
         sendClientRequest("GET", "/api/stats", "");
         sendClientRequest("GET", "/api/time", "");
-        sendClientRequest("GET", "/static/images/kotiki.jpg", "");
+        sendClientRequest("GET", "/static/img/kotiki.jpg", "");
         sendClientRequest("POST", "/api/echo", "Hello server!");
         server.stop();
     }
