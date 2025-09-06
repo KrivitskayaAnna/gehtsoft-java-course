@@ -21,7 +21,7 @@ export default function () {
     "GET / has HTML content": (r) => r.headers["Content-Type"] === "text/html",
   });
 
-  const staticResponse = http.get(`${BASE_URL}/static/images/koshka.png`);
+  const staticResponse = http.get(`${BASE_URL}/static/img/koshka.png`);
   check(staticResponse, {
     "GET /static/ returns status 200": (r) => r.status === 200,
   });
