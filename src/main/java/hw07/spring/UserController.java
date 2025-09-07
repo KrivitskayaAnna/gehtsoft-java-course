@@ -1,4 +1,4 @@
-package hw07_0;
+package hw07.spring;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

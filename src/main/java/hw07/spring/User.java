@@ -1,4 +1,4 @@
-package hw07_0;
+package hw07.spring;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
