@@ -65,11 +65,11 @@
             <artifactId>guava</artifactId>
             <version>33.4.8-jre</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>3.5.5</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-web</artifactId>-->
+<!--            <version>3.5.5</version>-->
+<!--        </dependency>-->
     </dependencies>
 
 </project>
