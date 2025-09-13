@@ -9,9 +9,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@CustomRequestMapping(
-        httpMethod = "DELETE"
-)
+@CustomRequestMapping(httpMethod="DELETE")
 public @interface CustomDeleteMapping {
     String value() default "/";
 }

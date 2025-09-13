@@ -10,9 +10,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@CustomRequestMapping(
-        httpMethod = "GET"
-)
+@CustomRequestMapping(httpMethod="GET")
 public @interface CustomGetMapping {
     String value() default "/";
 }

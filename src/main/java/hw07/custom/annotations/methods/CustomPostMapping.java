@@ -9,9 +9,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@CustomRequestMapping(
-        httpMethod = "POST"
-)
+@CustomRequestMapping(httpMethod="POST")
 public @interface CustomPostMapping {
     String value() default "/";
 }

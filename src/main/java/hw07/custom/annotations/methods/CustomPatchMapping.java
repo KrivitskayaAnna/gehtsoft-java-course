@@ -9,9 +9,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@CustomRequestMapping(
-        httpMethod = "PATCH"
-)
+@CustomRequestMapping(httpMethod="PATCH")
 public @interface CustomPatchMapping {
     String value() default "/";
 }

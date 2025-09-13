@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 public @interface CustomRequestMapping {
     String value() default "";
 
-    String httpMethod() default "";
+    String httpMethod() default "GET";
 }

@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 public class CustomWebServer {
-    private static final Logger logger;
+    protected static final Logger logger;
 
     static {
         Configurator.setRootLevel(org.apache.logging.log4j.Level.INFO);
@@ -31,7 +31,7 @@ public class CustomWebServer {
     private final ExecutorService executor;
     private ServerSocket serverSocket;
     private volatile boolean running = false;
-    private int requestsServed = 0;
+    protected int requestsServed = 0;
     private LocalDateTime serverStarted;
 
     public CustomWebServer(int port, int threadPoolSize, boolean useVirtualThreads) {
@@ -73,7 +73,7 @@ public class CustomWebServer {
 
     @Data
     @AllArgsConstructor
-    private static class HttpReq {
+    protected static class HttpReq {
         private String method;
         private String path;
         private String httpVersion;
@@ -81,7 +81,7 @@ public class CustomWebServer {
         private String body;
     }
 
-    private static HttpReq readRequest(BufferedReader in) throws IOException {
+    protected static HttpReq readRequest(BufferedReader in) throws IOException {
         String requestLine = in.readLine();
         if (requestLine == null) return null;
         String[] requestParts = requestLine.split(" ");
@@ -113,7 +113,7 @@ public class CustomWebServer {
         return new HttpReq(method, path, httpVersion, headers, body);
     }
 
-    private void handleClient(Socket clientSocket) throws IOException {
+    public void handleClient(Socket clientSocket) throws IOException {
         try (clientSocket) {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -145,7 +145,7 @@ public class CustomWebServer {
     }
 
 
-    private void respondError(PrintWriter printWriter) {
+    protected void respondError(PrintWriter printWriter) {
         printWriter.println("HTTP/1.1 400 Bad Request\r");
         printWriter.println("Content-Type: text/html\r");
         printWriter.println("Content-Length: 0\r");
@@ -153,7 +153,7 @@ public class CustomWebServer {
         printWriter.flush();
     }
 
-    private void respondSuccess(PrintWriter printWriter, String contentType, String body) {
+    protected void respondSuccess(PrintWriter printWriter, String contentType, String body) {
         printWriter.println("HTTP/1.1 200 OK\r");
         printWriter.println("Content-Type: " + contentType + '\r');
         printWriter.println("Content-Length: " + body.length() + '\r');
