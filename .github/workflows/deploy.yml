@@ -33,7 +33,7 @@ jobs:
         username: root
         key: ${{ secrets.SERVER_SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        source: "custom-webserver.tar.gz,docker-compose.yml"
+        source: "custom-webserver.tar.gz,github-compose.yml"
         target: "/opt/webserver"
     
     - name: Deploy on server
@@ -47,6 +47,6 @@ jobs:
           cd /opt/webserver
           docker load < custom-webserver.tar.gz
           docker-compose down
-          docker-compose up -d
+          docker-compose -f github-compose.yml up -d
           docker ps
           docker logs custom-webserver
