@@ -32,6 +32,7 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: root
         key: ${{ secrets.SERVER_SSH_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
         source: "custom-webserver.tar.gz,docker-compose.yml"
         target: "/opt/webserver"
     
@@ -41,6 +42,7 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: root
         key: ${{ secrets.SERVER_SSH_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
           cd /opt/webserver
           docker load < custom-webserver.tar.gz
