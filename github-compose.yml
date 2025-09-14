@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  webserver:
+    image: custom-webserver:latest
+    container_name: custom-webserver
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      - JAVA_OPTS=-Xmx512m
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
