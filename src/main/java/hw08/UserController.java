@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -12,7 +14,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable("id") Long id) {
+    public ResponseEntity<User> getUser(@PathVariable("id") Long id) throws SQLException {
         User user = userService.getUserById(id);
         if (user == null) {
             return ResponseEntity.notFound().build();
@@ -21,13 +23,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createUser(@RequestBody User user) {
+    public ResponseEntity<Long> createUser(@RequestBody User user) throws SQLException {
         Long id = userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @RequestBody User user) {
+    public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @RequestBody User user) throws SQLException {
         User previousUser = userService.updateUser(id, user);
         if (previousUser == null) {
             return ResponseEntity.notFound().build();
@@ -36,7 +38,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) throws SQLException {
         User deleted = userService.deleteUserById(id);
         if (deleted == null) {
             return ResponseEntity.notFound().build();
