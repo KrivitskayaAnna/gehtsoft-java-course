@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -15,11 +16,11 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable("id") Long id) throws SQLException {
-        User user = userService.getUserById(id);
-        if (user == null) {
+        Optional<User> user = userService.getUserById(id);
+        if (user.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(user.get());
     }
 
     @PostMapping
@@ -34,15 +35,16 @@ public class UserController {
         if (previousUser == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).body(previousUser);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) throws SQLException {
-        User deleted = userService.deleteUserById(id);
-        if (deleted == null) {
+        Optional<User> deleted = userService.getUserById(id);
+        if (deleted.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
+        userService.deleteUserById(id);
         return ResponseEntity.ok().build();
     }
 }

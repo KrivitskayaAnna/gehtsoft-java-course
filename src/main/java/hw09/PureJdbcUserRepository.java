@@ -36,6 +36,7 @@ public class PureJdbcUserRepository {
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 return new User(
+                        id,
                         rs.getString("name"),
                         rs.getString("surname"),
                         rs.getInt("age")
@@ -45,7 +46,7 @@ public class PureJdbcUserRepository {
         return null;
     }
 
-    public User update(Long id, User user) throws SQLException {
+    public User update(Long id, String name, String surname, Integer age) throws SQLException {
         User existingUser = getById(id);
         if (existingUser != null) {
             String sql = String.format(
@@ -54,18 +55,18 @@ public class PureJdbcUserRepository {
                     tableName
             );
             try (PreparedStatement st = connection.prepareStatement(sql)) {
-                st.setString(1, user.getName());
-                st.setString(2, user.getSurname());
-                st.setInt(3, user.getAge());
+                st.setString(1, name);
+                st.setString(2, surname);
+                st.setInt(3, age);
                 st.setLong(4, id);
                 st.executeUpdate();
             }
-            return user;
+            return new User(id, name, surname, age);
         }
         return null;
     }
 
-    public Long create(User user) throws SQLException {
+    public Long save(User user) throws SQLException {
         String sql = String.format(
                 "INSERT INTO %s.%s (name, surname, age) VALUES (?, ?, ?) RETURNING id",
                 schemaName,
@@ -78,6 +79,12 @@ public class PureJdbcUserRepository {
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 return rs.getLong("id");
+//                        new User(
+////                        rs.getLong("id"),
+//                        rs.getString("name"),
+//                        rs.getString("surname"),
+//                        rs.getInt("age")
+//                );
             }
         }
         return null;
@@ -94,6 +101,7 @@ public class PureJdbcUserRepository {
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 return new User(
+                        id,
                         rs.getString("name"),
                         rs.getString("surname"),
                         rs.getInt("age")
