@@ -5,6 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -12,35 +15,36 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable("id") Long id) {
-        User user = userService.getUserById(id);
-        if (user == null) {
+    public ResponseEntity<User> getUser(@PathVariable("id") Long id) throws SQLException {
+        Optional<User> user = userService.getUserById(id);
+        if (user.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(user.get());
     }
 
     @PostMapping
-    public ResponseEntity<Long> createUser(@RequestBody User user) {
+    public ResponseEntity<Long> createUser(@RequestBody User user) throws SQLException {
         Long id = userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @RequestBody User user) {
+    public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @RequestBody User user) throws SQLException {
         User previousUser = userService.updateUser(id, user);
         if (previousUser == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).body(previousUser);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
-        User deleted = userService.deleteUserById(id);
-        if (deleted == null) {
+    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) throws SQLException {
+        Optional<User> deleted = userService.getUserById(id);
+        if (deleted.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
+        userService.deleteUserById(id);
         return ResponseEntity.ok().build();
     }
 }
